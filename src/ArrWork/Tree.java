@@ -12,9 +12,10 @@ public class Tree{
 
     public void make_tree(Node current_node, ArrayList<ArrayList<Figure>> previous_wolves, ArrayList<Figure> prev_rabbits, int depth)
     {
-        if(depth<8) {
-            ArrayList<Figure> new_rabbits = new ArrayList<>();
+        if(depth<13) {
+            depth += 1;
             for (Figure prev_rabbit : prev_rabbits) {
+                ArrayList<Figure> new_rabbits = new ArrayList<>();
                 int rabbit_x = prev_rabbit.x;
                 int rabbit_y = prev_rabbit.y;
                 if (rabbit_x + 1 < 8 && rabbit_y + 1 < 8)
@@ -25,41 +26,54 @@ public class Tree{
                     new_rabbits.add(new Figure(rabbit_x - 1, rabbit_y + 1, true));
                 if (rabbit_x + 1 < 8 && rabbit_y - 1 >= 0)
                     new_rabbits.add(new Figure(rabbit_x + 1, rabbit_y - 1, true));
-            }
-            depth += 1;
-            for (Figure f : new_rabbits) {
-                ArrayList<Figure> rabbit = new ArrayList<>();
-                rabbit.add(f);
-                current_node.addChild(new Node(rabbit, depth));
-            }
-            depth+=1;
-            for (int k =0;k<current_node.getChildren().size();k++) {
-                Node children_node = current_node.getChildren().get(k);
-                ArrayList<ArrayList<Figure>> new_wolves = new ArrayList<>();
-                for (ArrayList<Figure> old_wolves : previous_wolves) {
-                    for(int l =0; l< old_wolves.size();l++)
-                    {
-                        if(old_wolves.get(l).getX()+1<8 && old_wolves.get(l).getY()+1<8) {
-                            ArrayList<Figure> new_old_wolves = new ArrayList<>(old_wolves);
-                            new_old_wolves.set(l,new Figure(old_wolves.get(l).getX()+1,old_wolves.get(l).getY()+1,false));
-                            new_wolves.add(new_old_wolves);
+
+                for(Figure f: new_rabbits) {
+                    ArrayList<Figure> f_list = new ArrayList<>();
+                    f_list.add(f);
+                    Node children_node = new Node(f_list, depth);
+                    current_node.addChild(children_node);
+
+
+                    for (ArrayList<Figure> old_wolves : previous_wolves) {
+                        ArrayList<ArrayList<Figure>> new_wolves = new ArrayList<>();
+                        for(int l =0; l< old_wolves.size();l++)
+                        {
+                            if(old_wolves.get(l).getX()+1<8 && old_wolves.get(l).getY()+1<8 && old_wolves.get(l).getX()!=f.getX()&&old_wolves.get(l).getY()!=f.getY()) {
+                                ArrayList<Figure> new_old_wolves = new ArrayList<>(old_wolves);
+                                new_old_wolves.set(l,new Figure(old_wolves.get(l).getX()+1,old_wolves.get(l).getY()+1,false));
+                                new_wolves.add(new_old_wolves);
+                            }
+                            if(old_wolves.get(l).getX()-1>0 && old_wolves.get(l).getY()+1<8 && old_wolves.get(l).getX()!=f.getX()&&old_wolves.get(l).getY()!=f.getY()) {
+                                ArrayList<Figure> new_old_wolves = new ArrayList<>(old_wolves);
+                                new_old_wolves.set(l,new Figure(old_wolves.get(l).getX()-1,old_wolves.get(l).getY()+1,false));
+                                new_wolves.add(new_old_wolves);
+                            }
                         }
-                        if(old_wolves.get(l).getX()-1>0 && old_wolves.get(l).getY()+1<8) {
-                            ArrayList<Figure> new_old_wolves = new ArrayList<>(old_wolves);
-                            new_old_wolves.set(l,new Figure(old_wolves.get(l).getX()-1,old_wolves.get(l).getY()+1,false));
-                            new_wolves.add(new_old_wolves);
+                        if(new_wolves.size()!=0) {
+                            for (ArrayList<Figure> newie : new_wolves) {
+                                Node new_node = new Node(newie, depth + 1);
+                                children_node.addChild(new_node);
+                                ArrayList<ArrayList<Figure>> newie_arr_list = new ArrayList<>();
+                                newie_arr_list.add(newie);
+                                make_tree(new_node, newie_arr_list, f_list, depth + 1);
+                            }
                         }
+
                     }
-                }
-                for(ArrayList<Figure> newie : new_wolves)
-                {
-                    Node new_node = new Node(newie,depth);
-                    children_node.addChild(new_node);
-                    make_tree(new_node,new_wolves,new_rabbits,depth);
+
                 }
 
+
+
             }
-        }
+
+
+
+
+
+
+            }
+
 
 
 
@@ -67,7 +81,7 @@ public class Tree{
 
 
 
-    public ArrayList<Figure> possible_options_for_wolves(int depth, Figure last_rabbit, Node current_node)
+    public ArrayList<Figure> possible_options_for_wolves(int depth, Figure last_rabbit, Node current_node, ArrayList<Figure>rabbit_movements, int iter_movements)
     {
         ArrayList<Figure> answer = new ArrayList<>();
         if(current_node.getDepth()==depth-2 ) {
@@ -83,8 +97,20 @@ public class Tree{
                 }
             }
         }
-        else if(current_node.getDepth()<depth-2)
-            return possible_options_for_wolves(depth,last_rabbit,current_node.getChildren().get(0));
+        else if(current_node.getDepth()<depth-2) {
+            if(current_node.getDepth()%2!=0) {
+                for (Node child : current_node.getChildren()) {
+                    if(child.get_figure().get(0).getX()==rabbit_movements.get(iter_movements).getX() && child.get_figure().get(0).getY()==rabbit_movements.get(iter_movements).getY())
+                    {
+                        iter_movements+=1;
+                        return possible_options_for_wolves(depth, last_rabbit, child,rabbit_movements,iter_movements);
+                    }
+                }
+
+            }
+            else
+                return possible_options_for_wolves(depth, last_rabbit, current_node.getChildren().get(0),rabbit_movements,iter_movements);
+        }
         return answer;
     }
 }

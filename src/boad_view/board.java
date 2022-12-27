@@ -177,9 +177,9 @@ public class board {
                 b.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         System.out.println("Button clicked " + " X: " + finalI + " Y:" + finalJ );
-                        move_rabbit(rabbit, finalI, finalJ,panel, c, board_buttons,rabbit_pos,rabbit_movement);
-                        move_wolves(tree,rabbit_movement,wolves_buttons, panel,c,board_buttons);
-//                        paint_board(board_buttons);
+                        int checker =  move_rabbit(rabbit, finalI, finalJ,panel, c, board_buttons,rabbit_pos,rabbit_movement);
+                        if(checker ==1) move_wolves(tree,rabbit_movement,wolves_buttons, panel,c,board_buttons);
+
 
                     }
                 });
@@ -205,7 +205,7 @@ public class board {
         }
     }
 
-    void move_rabbit(JButton rabbit, int move_x, int move_y, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_buttons, ArrayList<ArrayList<Integer>>rabbit_pos, ArrayList<Figure>rabbit_movements)
+    int move_rabbit(JButton rabbit, int move_x, int move_y, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_buttons, ArrayList<ArrayList<Integer>>rabbit_pos, ArrayList<Figure>rabbit_movements)
     {
 
         int rabbit_x = rabbit_pos.get(rabbit_pos.size()-1).get(0);
@@ -248,15 +248,30 @@ public class board {
             new_position.add(move_y);
             rabbit_pos.add(new_position);
             System.out.println("Rabbit moved");
+            return 1;
 
         }
+        return 0;
 
+    }
+
+    void setupBoardButtons(ArrayList<ArrayList<JButton>> board_buttons, JPanel panel, GridBagConstraints c)
+    {
+        for(int i =0; i<8;i++)
+        {
+            for(int j =0; j<8;j++)
+            {
+                c.gridx=i;
+                c.gridy=j;
+                panel.add(board_buttons.get(i).get(j),c);
+            }
+        }
     }
 
     void move_wolves(Tree tree, ArrayList<Figure>rabbit_movements, ArrayList<JButton> wolf_buttons, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_button)
     {
         ArrayList<Figure> move_w = new ArrayList<>();
-        move_w = tree.possible_options_for_wolves(rabbit_movements.size()*2-1,rabbit_movements.get(rabbit_movements.size()-1),tree.getRoot());
+        move_w = tree.possible_options_for_wolves(rabbit_movements.size()*2-1,rabbit_movements.get(rabbit_movements.size()-1),tree.getRoot(),rabbit_movements,1);
         System.out.println(move_w.size());
         for(Figure f: move_w)
             System.out.println("W: " +f.getX()+" "+ f.getY());
@@ -264,6 +279,12 @@ public class board {
         {
             panel.remove(w);
         }
+        for(ArrayList<JButton> board: board_button)
+        {
+            for(JButton b: board)
+                panel.remove(b);
+        }
+        setupBoardButtons(board_button, panel,c);
         System.out.println("Wolves deleted");
         panel.repaint();
         panel.revalidate();
@@ -278,6 +299,7 @@ public class board {
             panel.add(wolf_buttons.get(i), c);
 
         }
+        System.out.println("Wolves moved");
 
     }
 }
