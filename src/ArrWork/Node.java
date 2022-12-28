@@ -6,7 +6,7 @@ public class Node {
     private final ArrayList<Figure> figure;
     private final int depth;
     private final ArrayList<Node> children ;
-    int amount_of_conflicts;
+    int value;
 
     boolean visited = false;
 
@@ -14,15 +14,23 @@ public class Node {
         this.figure = figure;
         this.children = new ArrayList<>();
         this.depth = depth;
-        this.amount_of_conflicts = 0;
+
     }
 
-    public int getConflicts ()
+
+
+    public int getValue ()
     {
-        return this.amount_of_conflicts;
+        return this.value;
     }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
     public void setVisited(boolean val)
     {
+
         visited = val;
     }
     public ArrayList<Figure> get_figure(){

@@ -4,14 +4,11 @@ import ArrWork.Figure;
 import ArrWork.Node;
 import ArrWork.Tree;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+
 import java.util.ArrayList;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
@@ -19,7 +16,20 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class board {
 
-    public void setup_board() throws IOException {
+    Tree tree;
+    JFrame game_frame;
+
+    int computerWon= 0; // 0 - game in process 1 - comp won 2 - user won
+
+    public void setTree(Tree tree) {
+        this.tree = tree;
+    }
+
+    public void setGame_frame(JFrame game_frame) {
+        this.game_frame = game_frame;
+    }
+
+    public void setup_board(){
 
 
         int rabbit_start_x = 6;
@@ -29,7 +39,7 @@ public class board {
         ArrayList<Figure> rabbits_options = new ArrayList<>();
         rabbits_options.add(new Figure(rabbit_start_x,rabbit_start_y,true));
 
-        Tree tree = new Tree(new Node(rabbits_options,0));
+        Tree tree_m = new Tree(new Node(rabbits_options,0));
 
         ArrayList<ArrayList<Figure>> prev_wolves = new ArrayList<>();
         ArrayList<Figure> start_wolves = new ArrayList<>();
@@ -38,8 +48,9 @@ public class board {
             start_wolves.add(new Figure(l*2+1,0,false));
         }
         prev_wolves.add(start_wolves);
-        tree.getRoot().addChild(new Node(start_wolves,1));
-        tree.make_tree(tree.getRoot().getChildren().get(0),prev_wolves,rabbits_options,1);
+        tree_m.getRoot().addChild(new Node(start_wolves,1));
+        tree_m.make_tree(tree_m.getRoot().getChildren().get(0),prev_wolves,rabbits_options,1);
+        setTree(tree_m);
 
 
 
@@ -80,6 +91,8 @@ public class board {
         ArrayList<JButton> wolves = add_wolves();
         int iter =0;
         for(JButton w: wolves) {
+            w.setBorderPainted( false );
+            w.setFocusPainted( false );
             c.gridx = iter*2+1;
             c.gridwidth = 1;
             c.gridy = 0;
@@ -87,7 +100,7 @@ public class board {
             iter++;
         }
 
-        ArrayList<ArrayList<JButton>> board_buttons = make_board(rabbit_button,pane, c,rabbit_pos,rabbit_movements,tree,wolves);
+        ArrayList<ArrayList<JButton>> board_buttons = make_board(rabbit_button,pane, c,rabbit_pos,rabbit_movements,wolves);
 
 
 
@@ -125,6 +138,7 @@ public class board {
         f.setSize(700,700);
 
         f.setResizable(false);
+        setGame_frame(f);
 
     }
 
@@ -159,7 +173,7 @@ public class board {
     }
 
     ArrayList<ArrayList<JButton>> make_board(JButton rabbit, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<Integer>>rabbit_pos, ArrayList<Figure>rabbit_movement
-    ,Tree tree,ArrayList<JButton>wolves_buttons)
+    ,ArrayList<JButton>wolves_buttons)
     {
         ArrayList<ArrayList<JButton>>board_buttons = new ArrayList<>();
         for(int i =0; i<8;i++) {
@@ -178,7 +192,12 @@ public class board {
                     public void actionPerformed(ActionEvent e) {
                         System.out.println("Button clicked " + " X: " + finalI + " Y:" + finalJ );
                         int checker =  move_rabbit(rabbit, finalI, finalJ,panel, c, board_buttons,rabbit_pos,rabbit_movement);
-                        if(checker ==1) move_wolves(tree,rabbit_movement,wolves_buttons, panel,c,board_buttons);
+                        ArrayList<Figure> last_wolves  = new ArrayList<>();
+                        if(checker ==1) {
+//                            move_wolves_easy(rabbit_movement, wolves_buttons, panel, c, board_buttons);
+                            move_wolves_medium(rabbit_movement, wolves_buttons, panel, c, board_buttons);
+
+                        }
 
 
                     }
@@ -205,7 +224,8 @@ public class board {
         }
     }
 
-    int move_rabbit(JButton rabbit, int move_x, int move_y, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_buttons, ArrayList<ArrayList<Integer>>rabbit_pos, ArrayList<Figure>rabbit_movements)
+    int move_rabbit(JButton rabbit, int move_x, int move_y, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_buttons, ArrayList<ArrayList<Integer>>rabbit_pos,
+                    ArrayList<Figure>rabbit_movements)
     {
 
         int rabbit_x = rabbit_pos.get(rabbit_pos.size()-1).get(0);
@@ -248,6 +268,11 @@ public class board {
             new_position.add(move_y);
             rabbit_pos.add(new_position);
             System.out.println("Rabbit moved");
+            if(move_y == 0) {
+                JOptionPane.showMessageDialog(game_frame, "You won!");
+                computerWon = 2;
+                game_frame.dispose();
+            }
             return 1;
 
         }
@@ -268,10 +293,10 @@ public class board {
         }
     }
 
-    void move_wolves(Tree tree, ArrayList<Figure>rabbit_movements, ArrayList<JButton> wolf_buttons, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_button)
+    void move_wolves_easy( ArrayList<Figure>rabbit_movements, ArrayList<JButton> wolf_buttons, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_button)
     {
-        ArrayList<Figure> move_w = new ArrayList<>();
-        move_w = tree.possible_options_for_wolves(rabbit_movements.size()*2-1,rabbit_movements.get(rabbit_movements.size()-1),tree.getRoot(),rabbit_movements,1);
+        ArrayList<Figure> move_w  = tree.possible_options_for_wolves(rabbit_movements.size()*2-1,rabbit_movements.get(rabbit_movements.size()-1),tree.getRoot(),rabbit_movements,1);
+
         System.out.println(move_w.size());
         for(Figure f: move_w)
             System.out.println("W: " +f.getX()+" "+ f.getY());
@@ -300,6 +325,157 @@ public class board {
 
         }
         System.out.println("Wolves moved");
+        if(rabbit_movements.size()==3)
+        {
+            rabbit_movements.remove(0);
+            rabbit_movements.remove(0);
+            Figure new_rabbit = new Figure(rabbit_movements.get(0).getX(),rabbit_movements.get(0).getY(),true);
+            ArrayList<Figure> rab = new ArrayList<>();
+            rab.add(new_rabbit);
+
+            Tree tree_m = new Tree(new Node(rab,0));
+            tree_m.getRoot().addChild(new Node(move_w,1));
+            ArrayList<ArrayList<Figure>> previous_wolf = new ArrayList<>();
+            previous_wolf.add(move_w);
+            tree_m.make_tree(tree_m.getRoot().getChildren().get(0),previous_wolf,rab,1);
+            setTree(tree_m);
+        }
+
+
+    }
+
+    void move_wolves_medium( ArrayList<Figure>rabbit_movements, ArrayList<JButton> wolf_buttons, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_button)
+    {
+        ArrayList<Figure> move_w  = tree.alpha_beta_pruning(rabbit_movements.size()*2-1,rabbit_movements.get(rabbit_movements.size()-1),tree.getRoot(),rabbit_movements,1);
+        ArrayList<Figure> move_w_plus_rab = new ArrayList<>(move_w);
+        move_w_plus_rab.add(rabbit_movements.get(rabbit_movements.size()-1));
+        while(!Figure.check_for_duplicates(move_w_plus_rab,null))
+        {
+            move_w  = tree.alpha_beta_pruning(rabbit_movements.size()*2-1,rabbit_movements.get(rabbit_movements.size()-1),tree.getRoot(),rabbit_movements,1);
+            move_w_plus_rab = new ArrayList<>(move_w);
+            move_w_plus_rab.add(rabbit_movements.get(rabbit_movements.size()-1));
+        }
+
+        System.out.println(move_w.size());
+        for(Figure f: move_w)
+            System.out.println("W: " +f.getX()+" "+ f.getY());
+        for(JButton w: wolf_buttons)
+        {
+            panel.remove(w);
+        }
+        for(ArrayList<JButton> board: board_button)
+        {
+            for(JButton b: board)
+                panel.remove(b);
+        }
+        setupBoardButtons(board_button, panel,c);
+        System.out.println("Wolves deleted");
+        panel.repaint();
+        panel.revalidate();
+        for(int i =0; i<move_w.size();i++)
+        {
+            c.gridx = move_w.get(i).getX();
+            c.gridy = move_w.get(i).getY();
+
+            panel.remove(board_button.get(move_w.get(i).getX()).get(move_w.get(i).getY()));
+            panel.repaint();
+            panel.revalidate();
+            panel.add(wolf_buttons.get(i), c);
+
+        }
+        System.out.println("Wolves moved");
+        if(rabbit_movements.size()==3)
+        {
+            rabbit_movements.remove(0);
+            rabbit_movements.remove(0);
+            Figure new_rabbit = new Figure(rabbit_movements.get(0).getX(),rabbit_movements.get(0).getY(),true);
+            ArrayList<Figure> rab = new ArrayList<>();
+            rab.add(new_rabbit);
+
+            Tree tree_m = new Tree(new Node(rab,0));
+            tree_m.getRoot().addChild(new Node(move_w,1));
+            ArrayList<ArrayList<Figure>> previous_wolf = new ArrayList<>();
+            previous_wolf.add(move_w);
+            tree_m.make_tree(tree_m.getRoot().getChildren().get(0),previous_wolf,rab,1);
+            setTree(tree_m);
+        }
+
+
+    }
+
+    void check_if_comp_won(int rabbit_x, int rabbit_y, ArrayList<Figure> wolves)
+    {
+        // check if all are surrounding
+        int checker_1 = 0;
+        for(Figure f:wolves)
+        {
+            if((f.getX()==rabbit_x+1 &&f.getY()==rabbit_y+1) ||(f.getX()==rabbit_x-1 &&f.getY()==rabbit_y-1)||(f.getX()==rabbit_x+1 &&f.getY()==rabbit_y-1)||(f.getX()==rabbit_x-1 &&f.getY()==rabbit_y+1))
+                checker_1++;
+        }
+        if(checker_1==4)
+        {
+            computerWon=1;
+            JOptionPane.showMessageDialog(game_frame, "Computer won");
+            game_frame.dispose();
+        }
+        else{
+            // check if rabbit has no moves and not in 0
+
+
+
+
+        }
+
+    }
+
+    void move_wolves_hard( ArrayList<Figure>rabbit_movements, ArrayList<JButton> wolf_buttons, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_button)
+    {
+        ArrayList<Figure> move_w  = tree.alpha_beta_pruning(rabbit_movements.size()*2-1,rabbit_movements.get(rabbit_movements.size()-1),tree.getRoot(),rabbit_movements,1);
+
+        System.out.println(move_w.size());
+        for(Figure f: move_w)
+            System.out.println("W: " +f.getX()+" "+ f.getY());
+        for(JButton w: wolf_buttons)
+        {
+            panel.remove(w);
+        }
+        for(ArrayList<JButton> board: board_button)
+        {
+            for(JButton b: board)
+                panel.remove(b);
+        }
+        setupBoardButtons(board_button, panel,c);
+        System.out.println("Wolves deleted");
+        panel.repaint();
+        panel.revalidate();
+        for(int i =0; i<move_w.size();i++)
+        {
+            c.gridx = move_w.get(i).getX();
+            c.gridy = move_w.get(i).getY();
+
+            panel.remove(board_button.get(move_w.get(i).getX()).get(move_w.get(i).getY()));
+            panel.repaint();
+            panel.revalidate();
+            panel.add(wolf_buttons.get(i), c);
+
+        }
+        System.out.println("Wolves moved");
+        if(rabbit_movements.size()==3)
+        {
+            rabbit_movements.remove(0);
+            rabbit_movements.remove(0);
+            Figure new_rabbit = new Figure(rabbit_movements.get(0).getX(),rabbit_movements.get(0).getY(),true);
+            ArrayList<Figure> rab = new ArrayList<>();
+            rab.add(new_rabbit);
+
+            Tree tree_m = new Tree(new Node(rab,0));
+            tree_m.getRoot().addChild(new Node(move_w,1));
+            ArrayList<ArrayList<Figure>> previous_wolf = new ArrayList<>();
+            previous_wolf.add(move_w);
+            tree_m.make_tree(tree_m.getRoot().getChildren().get(0),previous_wolf,rab,1);
+            setTree(tree_m);
+        }
+
 
     }
 }
