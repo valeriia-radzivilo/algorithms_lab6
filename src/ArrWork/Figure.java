@@ -33,19 +33,8 @@ public class Figure {
         return x_y;
     }
 
-    void setX(int new_x)
-    {
-        this.x = new_x;
-    }
-    void setY(int new_y)
-    {
-        this.y = new_y;
-    }
-
     public static boolean check_for_duplicates(ArrayList<Figure> wolves, Figure needed_to_add)
     {
-        if(needed_to_add!= null)
-            wolves.add(needed_to_add);
         for(int i =0;i<wolves.size();i++)
         {
             for(int j =0; j< wolves.size();j++)

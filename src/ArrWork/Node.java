@@ -8,8 +8,6 @@ public class Node {
     private final ArrayList<Node> children ;
     int value;
 
-    boolean visited = false;
-
     public Node(ArrayList<Figure> figure, int depth){
         this.figure = figure;
         this.children = new ArrayList<>();
@@ -28,11 +26,6 @@ public class Node {
         this.value = value;
     }
 
-    public void setVisited(boolean val)
-    {
-
-        visited = val;
-    }
     public ArrayList<Figure> get_figure(){
         return figure;
     }

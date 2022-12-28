@@ -135,7 +135,7 @@ public class board {
         f.pack();
         f.setLocationRelativeTo( null );
         f.setVisible(true);
-        f.setSize(700,700);
+        f.setSize(900,700);
 
         f.setResizable(false);
         setGame_frame(f);
@@ -195,7 +195,8 @@ public class board {
                         ArrayList<Figure> last_wolves  = new ArrayList<>();
                         if(checker ==1) {
 //                            move_wolves_easy(rabbit_movement, wolves_buttons, panel, c, board_buttons);
-                            move_wolves_medium(rabbit_movement, wolves_buttons, panel, c, board_buttons);
+                            last_wolves = new ArrayList<>(move_wolves_medium(rabbit_movement, wolves_buttons, panel, c, board_buttons));
+                            check_if_comp_won(rabbit_movement.get(rabbit_movement.size()-1).getX(),rabbit_movement.get(rabbit_movement.size()-1).getY(),last_wolves);
 
                         }
 
@@ -293,7 +294,7 @@ public class board {
         }
     }
 
-    void move_wolves_easy( ArrayList<Figure>rabbit_movements, ArrayList<JButton> wolf_buttons, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_button)
+    ArrayList<Figure> move_wolves_easy( ArrayList<Figure>rabbit_movements, ArrayList<JButton> wolf_buttons, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_button)
     {
         ArrayList<Figure> move_w  = tree.possible_options_for_wolves(rabbit_movements.size()*2-1,rabbit_movements.get(rabbit_movements.size()-1),tree.getRoot(),rabbit_movements,1);
 
@@ -341,10 +342,10 @@ public class board {
             setTree(tree_m);
         }
 
-
+        return move_w;
     }
 
-    void move_wolves_medium( ArrayList<Figure>rabbit_movements, ArrayList<JButton> wolf_buttons, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_button)
+    ArrayList<Figure> move_wolves_medium( ArrayList<Figure>rabbit_movements, ArrayList<JButton> wolf_buttons, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_button)
     {
         ArrayList<Figure> move_w  = tree.alpha_beta_pruning(rabbit_movements.size()*2-1,rabbit_movements.get(rabbit_movements.size()-1),tree.getRoot(),rabbit_movements,1);
         ArrayList<Figure> move_w_plus_rab = new ArrayList<>(move_w);
@@ -399,6 +400,7 @@ public class board {
             tree_m.make_tree(tree_m.getRoot().getChildren().get(0),previous_wolf,rab,1);
             setTree(tree_m);
         }
+        return move_w;
 
 
     }
@@ -420,10 +422,18 @@ public class board {
         }
         else{
             // check if rabbit has no moves and not in 0
-
-
-
-
+            int checker = 0;
+            for(Figure w: wolves)
+            {
+                if((rabbit_x+1== w.getX() && rabbit_y+1==w.getY())||(rabbit_x-1 == w.getX() && rabbit_y-1 == w.getY())||(rabbit_x-1==w.getX()&&rabbit_y+1==w.getY())||(rabbit_x+1==w.getX()&&rabbit_y-1==w.getY()))
+                    checker++;
+            }
+            if(checker>=3)
+            {
+                computerWon=1;
+                JOptionPane.showMessageDialog(game_frame, "Computer won");
+                game_frame.dispose();
+            }
         }
 
     }

@@ -68,7 +68,7 @@ public class Tree{
                                     int val = 0;
                                     for (Figure wolf_f : newie) {
                                         if (wolf_f.y != 0)
-                                            val += 10;
+                                            val += 1;
                                         val += Math.abs(wolf_f.y - f.y) + Math.abs(wolf_f.x - f.x);
                                     }
                                     new_node.setValue(val);
@@ -88,11 +88,6 @@ public class Tree{
 
 
             }
-
-
-
-
-
 
             }
 
