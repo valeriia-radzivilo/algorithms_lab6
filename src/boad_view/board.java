@@ -28,12 +28,17 @@ public class board {
     public void setGame_frame(JFrame game_frame) {
         this.game_frame = game_frame;
     }
-
-    public void setup_board(){
+    // 0-easy, 1-medium, 2 - hard
+    public void setup_board(int level_option){
 
 
         int rabbit_start_x = 6;
         int rabbit_start_y =7;
+        JButton easy_level=new JButton("Easy");
+        JButton medium_level=new JButton("Medium");
+        JButton hard_level=new JButton("Hard");
+
+
 
 
         ArrayList<Figure> rabbits_options = new ArrayList<>();
@@ -51,8 +56,6 @@ public class board {
         tree_m.getRoot().addChild(new Node(start_wolves,1));
         tree_m.make_tree(tree_m.getRoot().getChildren().get(0),prev_wolves,rabbits_options,1);
         setTree(tree_m);
-
-
 
 
         JFrame f=new JFrame("Chess Game");
@@ -82,12 +85,6 @@ public class board {
         rabbit_movements.add(new Figure(rabbit_start_x,rabbit_start_y,true));
 
 
-
-
-
-
-
-
         ArrayList<JButton> wolves = add_wolves();
         int iter =0;
         for(JButton w: wolves) {
@@ -100,8 +97,27 @@ public class board {
             iter++;
         }
 
-        ArrayList<ArrayList<JButton>> board_buttons = make_board(rabbit_button,pane, c,rabbit_pos,rabbit_movements,wolves);
+        easy_level.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                f.dispose();
+                setup_board(0);
 
+            }
+            });
+        medium_level.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                f.dispose();
+                setup_board(1);
+            }
+        });
+        hard_level.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                f.dispose();
+                setup_board(2);
+            }
+        });
+
+        ArrayList<ArrayList<JButton>> board_buttons = make_board(rabbit_button,pane, c,rabbit_pos,rabbit_movements,wolves, level_option);
 
 
 
@@ -121,15 +137,13 @@ public class board {
         }
 
 
-
-
-
-
-
-
-
-
-
+        c.gridx = 8;
+        c.gridy = 0;
+        pane.add(easy_level,c);
+        c.gridy+=1;
+        pane.add(medium_level,c);
+        c.gridy+=1;
+        pane.add(hard_level,c);
 
         f.setDefaultCloseOperation(EXIT_ON_CLOSE );
         f.pack();
@@ -173,8 +187,9 @@ public class board {
     }
 
     ArrayList<ArrayList<JButton>> make_board(JButton rabbit, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<Integer>>rabbit_pos, ArrayList<Figure>rabbit_movement
-    ,ArrayList<JButton>wolves_buttons)
+    ,ArrayList<JButton>wolves_buttons, int level_option)
     {
+
         ArrayList<ArrayList<JButton>>board_buttons = new ArrayList<>();
         for(int i =0; i<8;i++) {
             ArrayList<JButton> butts = new ArrayList<>();
@@ -194,8 +209,9 @@ public class board {
                         int checker =  move_rabbit(rabbit, finalI, finalJ,panel, c, board_buttons,rabbit_pos,rabbit_movement);
                         ArrayList<Figure> last_wolves  = new ArrayList<>();
                         if(checker ==1) {
-//                            move_wolves_easy(rabbit_movement, wolves_buttons, panel, c, board_buttons);
-                            last_wolves = new ArrayList<>(move_wolves_medium(rabbit_movement, wolves_buttons, panel, c, board_buttons));
+                            if(level_option==0) last_wolves = new ArrayList<>(move_wolves_easy(rabbit_movement, wolves_buttons, panel, c, board_buttons));
+                            if(level_option == 1) last_wolves = new ArrayList<>(move_wolves_medium(rabbit_movement, wolves_buttons, panel, c, board_buttons));
+                            if(level_option == 2) last_wolves = new ArrayList<>(move_wolves_hard(rabbit_movement, wolves_buttons, panel, c, board_buttons));
                             check_if_comp_won(rabbit_movement.get(rabbit_movement.size()-1).getX(),rabbit_movement.get(rabbit_movement.size()-1).getY(),last_wolves);
 
                         }
@@ -438,7 +454,7 @@ public class board {
 
     }
 
-    void move_wolves_hard( ArrayList<Figure>rabbit_movements, ArrayList<JButton> wolf_buttons, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_button)
+    ArrayList<Figure> move_wolves_hard( ArrayList<Figure>rabbit_movements, ArrayList<JButton> wolf_buttons, JPanel panel, GridBagConstraints c, ArrayList<ArrayList<JButton>> board_button)
     {
         ArrayList<Figure> move_w  = tree.alpha_beta_pruning(rabbit_movements.size()*2-1,rabbit_movements.get(rabbit_movements.size()-1),tree.getRoot(),rabbit_movements,1);
 
@@ -486,6 +502,6 @@ public class board {
             setTree(tree_m);
         }
 
-
+        return move_w;
     }
 }

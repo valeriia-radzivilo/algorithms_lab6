@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c7171c8b-be61-46ee-9741-6658712468fd" name="Changes" comment="wolves do not eat each other">
+    <list default="true" id="c7171c8b-be61-46ee-9741-6658712468fd" name="Changes" comment="aaaaaaaaaaaaaaaaaaaa">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ArrWork/Figure.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ArrWork/Figure.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ArrWork/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ArrWork/Node.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ArrWork/Tree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ArrWork/Tree.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/boad_view/board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/boad_view/board.java" afterDir="false" />
     </list>
@@ -99,7 +96,7 @@
       <workItem from="1672157489322" duration="3468000" />
       <workItem from="1672171307102" duration="5636000" />
       <workItem from="1672225627624" duration="1769000" />
-      <workItem from="1672241761793" duration="900000" />
+      <workItem from="1672241761793" duration="2465000" />
     </task>
     <task id="LOCAL-00001" summary="1">
       <created>1671904232971</created>
@@ -122,7 +119,14 @@
       <option name="project" value="LOCAL" />
       <updated>1672242050818</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="aaaaaaaaaaaaaaaaaaaa">
+      <created>1672242716106</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1672242716106</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -154,7 +158,8 @@
     <MESSAGE value="1" />
     <MESSAGE value="before huge changes in Tree&#10;max depth is 6" />
     <MESSAGE value="wolves do not eat each other" />
-    <option name="LAST_COMMIT_MESSAGE" value="wolves do not eat each other" />
+    <MESSAGE value="aaaaaaaaaaaaaaaaaaaa" />
+    <option name="LAST_COMMIT_MESSAGE" value="aaaaaaaaaaaaaaaaaaaa" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -165,12 +170,12 @@
         </breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/boad_view/board.java</url>
-          <line>298</line>
+          <line>314</line>
           <option name="timeStamp" value="32" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/boad_view/board.java</url>
-          <line>52</line>
+          <line>57</line>
           <option name="timeStamp" value="34" />
         </line-breakpoint>
       </breakpoints>
